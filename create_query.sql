@@ -11,4 +11,3 @@ CREATE TABLE IF NOT EXISTS `project_name.dataset_name.usd_to_inr_rates` (
 )
 PARTITION BY rate_date
 CLUSTER BY base_currency, target_currency
-
