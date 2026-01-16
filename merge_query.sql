@@ -3,15 +3,15 @@
 ---------------------------------
 --It safely upserts (update or insert) one USD → INR exchange rate per day into a Silver BigQuery table.
 
-MERGE `project_name.dataset_name.usd_to_inr_rates` t
+MERGE `ankit-data-platform.ds_silver.usd_inr_daily_rates` t
 USING (
   SELECT
     DATE(raw_payload.date)                 AS rate_date,
     raw_payload.base                       AS base_currency,
     'INR'                                  AS target_currency,
     CAST(raw_payload.rates.INR AS NUMERIC) AS rate
-  FROM `my_project.bronze.exchange_rates_raw`
-  WHERE ingestion_date = CURRENT_DATE()
+  FROM `ankit-data-platform.ds_bronze.exchange_rates_raw`
+  WHERE ingestion_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
     AND raw_payload.base = 'USD'
     AND raw_payload.rates.INR IS NOT NULL
 ) s
@@ -41,5 +41,4 @@ WHEN NOT MATCHED THEN
     s.rate,
     CURRENT_TIMESTAMP(),
     'frankfurter'
-  )
-
+  );
