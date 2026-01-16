@@ -1,4 +1,4 @@
-# Sample bronze data
+🔹 SAMPLE BRONZE DATA
 
 | ingestion_date | ingestion_ts     | raw_payload                                                                                             |
 | -------------- | ---------------- | ------------------------------------------------------------------------------------------------------- |
@@ -7,8 +7,7 @@
 
 
 
-
-# Sample silver data
+🔹 SAMPLE SILVER DATA
 
 | rate_date  | base_currency | target_currency | rate | ingestion_ts     | source      |
 | ---------- | ------------- | --------------- | ---- | ---------------- | ----------- |
