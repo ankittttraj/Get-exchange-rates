@@ -5,7 +5,7 @@ USD → INR Exchange Rate Pipeline
 - Stores raw API responses in Bronze (immutable)
 - Curates clean daily rates into Silver using MERGE
 - Runs production-grade data quality validations
-- Scheduled daily at 03:00 AM
+- Scheduled daily at 08:30 IST
 """
 
 from airflow import DAG
@@ -48,7 +48,7 @@ default_args = {
 dag = DAG(
     dag_id="usd_to_inr_fx_pipeline",
     default_args=default_args,
-    schedule_interval="0 3 * * *",  # Daily at 03:00 AM
+    schedule_interval="30 8 * * *",  # 08:30 IST daily
     catchup=False,
     max_active_runs=1,
     tags=["fx", "bigquery", "bronze_silver"]
