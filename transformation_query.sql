@@ -1,19 +1,30 @@
 -----------------------------
---Use in Transaction Conversion
+--Use in Transaction Conversion : “ROW_NUMBER() lets us rank all valid historical rates per transaction and select the most recent one.”
 -----------------------------
 config {
   type: "table",
-  schema: "analytics",        -- target dataset
-  name: "transactions_inr",   -- target table name
-  description: "Transactions converted from USD to INR using daily exchange rates",
+  schema: "ds_analytics",
+  name: "transactions_inr",
+  description: "Transactions converted from USD to INR using effective-date exchange rates",
   tags: ["transactions"]
 }
 
+WITH joined_rates AS (
+  SELECT
+    t.transaction_id,
+    t.amount AS amount_usd,
+    t.txn_date,
+    r.rate,
+    ROW_NUMBER() OVER (PARTITION BY t.transaction_id ORDER BY r.rate_date DESC) AS rn
+  FROM `ankit-data-platform.ds_analytics.transactions` t
+  JOIN `ankit-data-platform.ds_silver.usd_inr_daily_rates` r
+    ON r.rate_date <= t.txn_date
+)
+
 SELECT
-  t.transaction_id,
-  t.amount AS amount_usd,
-  t.amount * r.rate AS amount_inr,
-  t.txn_date
-FROM `project_name.dataset_name.transactions` t
-JOIN `project_name.dataset_name.usd_to_inr_rates` r
-ON t.txn_date = r.rate_date
+  transaction_id,
+  amount_usd,
+  amount_usd * rate AS amount_inr,
+  txn_date
+FROM joined_rates
+WHERE rn = 1;
